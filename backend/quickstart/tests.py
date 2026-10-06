@@ -1073,7 +1073,8 @@ class TestTaskUpdate:
         test_task.refresh_from_db()
         assert test_task.name == "Valid Update"
 
-
+# mark as required now that deltion is supported
+@pytest.mark.required
 @pytest.mark.tasks
 class TestTaskDeletion:
     def test_delete_task_authenticated_owner(

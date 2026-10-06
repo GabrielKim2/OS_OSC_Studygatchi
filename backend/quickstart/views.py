@@ -43,3 +43,23 @@ def get_task(request: Request) -> Response:
 
     except StudyUser.DoesNotExist:
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+# new remove task api
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_task(request: Request, task_id: int) -> Response:
+    # remove a task from a user's task list
+    # user must be both active and authenticated
+    if not request.user.is_active:
+        return Response(
+            {"error": "Cannot remove task from inactive user"}, status=status.HTTP_403_FORBIDDEN
+        )
+
+    # attempt to find the correct owner
+    try:
+        task = Task.objects.get(pk=task_id, user=request.user)
+    except Task.DoesNotExist:
+        return Response({"error": "Task cannot be found for current user"}, status=status.HTTP_404_NOT_FOUND)
+
+    task.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
